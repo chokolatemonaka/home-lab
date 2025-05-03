@@ -1,0 +1,11 @@
+resources:
+- ./apt-cacher-ng.yaml
+
+configMapGenerator:
+- name: apt-cacher-ng-config
+  files:
+    - config/acng.conf
+
+generatorOptions:
+  labels:
+    app: apt-cacher-ng
