@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: squid
+spec:
+  selector:
+    matchLabels:
+      app: squid
+  template:
+    metadata:
+      labels:
+        app: squid
+    spec:
+      # hostNetwork: true
+      containers:
+      - name: squid
+        image: ubuntu/squid:5.2-22.04_beta
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: squid
+  labels:
+    app: squid
+spec:
+  type: NodePort
+  ports:
+  # port: exposed port for kubernetes cluster
+  # targetPort: mapping port with service to pod
+  # nodePort: exposed port for service from ouside of kubernetes cluster
+  - port: 8080
+    targetPort: 3128
+    nodePort: 8080
+    protocol: TCP
+  selector:
+    app: squid
