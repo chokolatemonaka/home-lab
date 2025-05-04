@@ -1,0 +1,16 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: pod-monitor
+  labels:
+    app: pod-monitor
+spec:
+  selector:
+    matchLabels:
+      app: docker-mirror
+      app: image-registry
+      app: squid
+  podMetricsEndpoints:
+  - port: 65000
+  - port: 5000
+  - port: 8080

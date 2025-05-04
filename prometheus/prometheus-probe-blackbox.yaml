@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: blackbox-exporter
+spec:
+  selector:
+    matchLabels:
+      app: blackbox-exporter
+  template:
+    metadata:
+      labels:
+        app: blackbox-exporter
+    spec:
+      containers:
+      - name: blackbox-exporter
+        image: quay.io/prometheus/blackbox-exporter:v0.26.0
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: blackbox-exporter
+  labels:
+    app: blackbox-exporter
+spec:
+  endpoints:
+  - interval: 15s
+    port: metric-and-probe
+  selector:
+    matchLabels:
+      app: blackbox-exporter
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: blackbox-exporter
+  labels:
+    app: blackbox-exporter
+spec:
+  ports:
+  - name: metric-and-probe
+    port: 9115
+    nodePort: 9115
+    protocol: TCP
+  type: NodePort
+  selector:
+    app: blackbox-exporter
+---
+apiVersion: monitoring.coreos.com/v1
+kind: Probe
+metadata:
+  name: blackbox-exporter
+  labels:
+    app: blackbox-exporter
+spec:
+  jobName: ssh_probe
+  interval: 15s
+  module: ssh_banner
+  prober:
+    url: blackbox-exporter.default.svc.cluster.local:9115
+  targets:
+    staticConfig:
+      static:
+        - 192.168.0.1:22
