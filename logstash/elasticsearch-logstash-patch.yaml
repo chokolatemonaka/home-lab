@@ -1,0 +1,16 @@
+#- op: replace
+#  path: spec.auth.roles.secretName
+#  value: "my-roles-secret"
+
+apiVersion: elasticsearch.k8s.elastic.co/v1
+kind: Elasticsearch
+metadata:
+  name: elasticsearch
+spec:
+  version: 9.0.0
+  # https://www.elastic.co/docs/deploy-manage/deploy/cloud-on-k8s/configuration-examples-logstash#k8s-logstash-configuration-custom-index
+  # https://github.com/elastic/cloud-on-k8s/blob/main/config/recipes/logstash/logstash-es-role.yaml
+  # use updated logstash default user role
+  auth:
+    roles:
+      - secretName: my-roles-secret

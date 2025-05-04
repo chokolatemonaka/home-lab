@@ -1,0 +1,21 @@
+resources:
+- ../elasticsearch
+- logstash.yaml
+patches:
+ - target:
+     kind: Elasticsearch
+     version: v1
+     name: elasticsearch
+   path: elasticsearch-logstash-patch.yaml
+secretGenerator:
+- name: my-roles-secret
+  files:
+   - roles.yml
+patches:
+- patch: |-
+    apiVersion: v1
+    kind: Secret
+    metadata:
+      name: my-roles-secret
+      labels:
+        name: logstash

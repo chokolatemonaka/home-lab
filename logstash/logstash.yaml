@@ -1,0 +1,101 @@
+apiVersion: logstash.k8s.elastic.co/v1alpha1
+kind: Logstash
+metadata:
+  name: logstash
+spec:
+  count: 1
+  elasticsearchRefs:
+    - name: elasticsearch
+      clusterName: elasticsearch
+  version: 9.0.0
+# secureSettings:
+#   # get ca.crt to connect elasticsearch (ca.crt)
+#   - secretName: elasticsearch-es-remote-ca
+#   # get elastic user password (elastic)
+#   - secretName: elasticsearch-es-elastic-user
+  pipelines:
+    - pipeline.id: filebeat
+      config.string: |
+        input {
+          beats {
+            port => 5044
+          }
+        }
+        filter {
+          if [syslog][priority] == 6 {
+            mutate {
+              add_tag => "new-syslog-priority"
+            }
+          }
+        }
+        output {
+          stdout { codec => rubydebug {metadata => true } }
+        # https://www.elastic.co/docs/reference/logstash/use-ingest-pipelines
+          if [@metadata][pipeline] {
+            elasticsearch {
+              hosts => [ "${ELASTICSEARCH_ES_HOSTS}" ]
+              user => "${ELASTICSEARCH_ES_USER}"
+              password => "${ELASTICSEARCH_ES_PASSWORD}"
+              ssl_certificate_authorities => "${ELASTICSEARCH_ES_SSL_CERTIFICATE_AUTHORITY}"
+              manage_template => false
+              index => "%{[@metadata][beat]}-%{[@metadata][version]}"
+              action => "create"
+              pipeline => "%{[@metadata][pipeline]}"
+            }
+          } else {
+            elasticsearch {
+              hosts => [ "${ELASTICSEARCH_ES_HOSTS}" ]
+              user => "${ELASTICSEARCH_ES_USER}"
+              password => "${ELASTICSEARCH_ES_PASSWORD}"
+              ssl_certificate_authorities => "${ELASTICSEARCH_ES_SSL_CERTIFICATE_AUTHORITY}"
+              manage_template => false
+              index => "%{[@metadata][beat]}-%{[@metadata][version]}"
+              action => "create"
+            }
+          }
+
+         #if "new-syslog-priority" in [tags] {
+         #  http {
+         #    url => "http://nginx-service:8080"
+         #    http_method => "get"
+         #    # format => "message"
+         #    # message => "hogehoge"
+         #  }
+         #}
+        }
+    - pipeline.id: syslog
+      config.string: |
+        input {
+          syslog {
+            port => 514
+          }
+        }
+        output {
+          stdout { codec => rubydebug }
+          elasticsearch {
+            hosts => [ "${ELASTICSEARCH_ES_HOSTS}" ]
+            user => "${ELASTICSEARCH_ES_USER}"
+            password => "${ELASTICSEARCH_ES_PASSWORD}"
+            ssl_certificate_authorities => "${ELASTICSEARCH_ES_SSL_CERTIFICATE_AUTHORITY}"
+          }
+        }
+  services:
+    - name: beats
+      service:
+        spec:
+          type: NodePort
+          ports:
+            - port: 5044
+              name: "filebeat"
+              protocol: TCP
+              targetPort: 5044
+              nodePort: 5044
+    - name: syslog
+      service:
+        spec:
+          type: NodePort
+          ports:
+            - port: 514
+              name: "syslog"
+              protocol: TCP
+              nodePort: 514

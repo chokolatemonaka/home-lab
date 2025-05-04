@@ -40,7 +40,7 @@ outClusterUser[user] -->|put data| elasticsearch
 
 ```sh
 # install elasticsearch
-kubectl apply -f elasticsearch.yaml
+kubectl apply -k .
 
 # get access
 PASSWORD=$(kubectl get secret elasticsearch-es-elastic-user -o go-template='{{.data.elastic | base64decode}}')
@@ -51,5 +51,5 @@ curl -u "elastic:$PASSWORD" -k "https://localhost:9200"
 
 ```sh
 # uninstall elasticsearch
-kubectl delete -f elasticsearch.yaml
+kubectl delete -k .
 ```
