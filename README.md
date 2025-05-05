@@ -11,6 +11,7 @@ This repository describes how to setup home laboratory.
 
 - kubernetes
   - [k3s](k3s)
+  - [metallb](metallb)
 - build environment
   - [kaniko](kaniko)
 - apt-cach
