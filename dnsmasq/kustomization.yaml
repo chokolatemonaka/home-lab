@@ -1,0 +1,16 @@
+resources:
+  - dnsmasq.yaml
+
+configMapGenerator:
+- name: dnsmasq-config
+  files:
+    - config/dnsmasq.conf
+- name: dnsmasq-hosts
+  files:
+    - config/dnsmasq.hosts
+- name: dnsmasq-dhcp-hosts
+  files:
+    - config/dnsmasq.dhcp-hosts
+generatorOptions:
+  labels:
+    app: dnsmasq

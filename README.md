@@ -23,6 +23,10 @@ This repository describes how to setup home laboratory.
     - [docker-mirror](docker-mirror)
   - image-registry
     - [image-registry](image-registry)
+- DNS
+  - [dnsmasq](dnsmasq)
+- DHCP
+  - [dnsmasq](dnsmasq)
 - metrics monitoring
   - [grafana](grafana)
   - [prometheus-operator](prometheus-operator)

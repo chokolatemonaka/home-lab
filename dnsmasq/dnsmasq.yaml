@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dnsmasq
+spec:
+  selector:
+    matchLabels:
+      app: dnsmasq
+  template:
+    metadata:
+      labels:
+        app: dnsmasq
+    spec:
+      containers:
+      - name: dnsmasq
+        image: localhost:65000/dnsmasq:debian-bookworm-slim
+        volumeMounts:
+          - name: dnsmasq-config
+            mountPath: /etc/dnsmasq.conf
+            subPath: dnsmasq.conf
+          - name: dnsmasq-hosts
+            mountPath: /etc/dnsmasq.hosts
+            subPath: dnsmasq.hosts
+          - name: dnsmasq-dhcp-hosts
+            mountPath: /etc/dnsmasq.dhcp-hosts
+            subPath: dnsmasq.dhcp-hosts
+      volumes:
+        - name: dnsmasq-config
+          configMap:
+            name: dnsmasq-config
+        - name: dnsmasq-hosts
+          configMap:
+            name: dnsmasq-hosts
+        - name: dnsmasq-dhcp-hosts
+          configMap:
+            name: dnsmasq-dhcp-hosts
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dnsmasq
+  labels:
+    app: dnsmasq
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 53
+    targetPort: 53
+    protocol: UDP
+    name: dns
+    nodePort: 53
+  - port: 67
+    targetPort: 67
+    protocol: UDP
+    name: dhcp
+    nodePort: 67
+  selector:
+    app: dnsmasq
