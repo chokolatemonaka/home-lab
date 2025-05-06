@@ -1,0 +1,5 @@
+resources:
+  - install.yaml
+
+patches:
+  - path: open-argocd-server-service.yaml

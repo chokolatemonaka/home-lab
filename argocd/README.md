@@ -33,12 +33,12 @@ end
 ## setup
 
 ```sh
-wget https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
-kubectl apply -f install.yaml
+# wget https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+kubectl apply -k .
 ```
 
 ## teardown
 
 ```sh
-kubectl delete -f install.yaml
+kubectl delete -k .
 ```
