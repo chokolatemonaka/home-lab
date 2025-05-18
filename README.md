@@ -25,6 +25,7 @@ This repository describes how to setup home laboratory.
     - [image-registry](image-registry)
 - DNS
   - [dnsmasq](dnsmasq)
+  - [systemd-resolved](systemd-resolved)
 - DHCP
   - [dnsmasq](dnsmasq)
 - metrics monitoring
