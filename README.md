@@ -41,3 +41,5 @@ This repository describes how to setup home laboratory.
   - [logstash](logstash)
   - beats
     - [filebeat](beats/filebeat)
+- vm
+  - [libvirt](libvirt)
